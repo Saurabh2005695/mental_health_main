@@ -1,6 +1,7 @@
 # Mental Health Monitoring System (Django)
 
 This project is a **Django-based mental health monitoring application** that combines computer-vision emotion analysis with patient record management. It analyzes patient video (e.g. webcam feed) to detect facial emotions in real time, storing these emotional cues alongside patient data. Such video-based emotion detection can play a crucial role in mental healthcare, providing insights for diagnosis and monitoring.  
+video link : "https://drive.google.com/file/d/1c03YAwsX7VRe_Io6PNINAmkLQ9B0iFQs/view?usp=sharing"
 
 ## Features
 
