@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Patient Records</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'nav1.css' %}">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        body {
+            background-image: url("{% static 'bg3.gif' %}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            margin: 0;
+            font-size: 16px;
+            background-color: #89dc8a;
+        }
+        .container {
+            padding: 20px;
+            width: 100%;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            backdrop-filter:blur(4px);
+            border-radius:8px;
+            display:flex;
+            display:grid;
+            margin: 50px auto;
+        }
+        h2 { text-align: center; color: #fff; }
+        table {
+            border-collapse: collapse;
+            padding: 20px;
+            width: 100%;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            backdrop-filter:blur(14px);
+            border-radius:8px;
+            display:flex;
+            display:grid;
+            flex-direction: column;
+            gap: 10px;
+        }
+        th, td { padding: 10px; border: 1px solid #fff; text-align: left;border-radius: 10px;color: #fff; }
+        th {color: #fff; }
+        tr:hover {background-color: #ccc;}
+        a:link {
+            color: #fff;
+            background-color: transparent;
+            text-decoration: none;
+        }
+        #plotly-graph, #pie-chart {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <ul>
+        <li><a class="active" href="{% url 'dashboard' %}">Welcome, {{ user.username }}</a></li>
+        <li><a href="{% url 'view_records' %}">View Medical Records</a></li>
+        {% if user.is_doctor %}
+            <li><a href="{% url 'upload_record' %}">Upload Medical Record</a></li>
+        {% endif %}
+        {% if user.wallet_address %}
+            <li><a href="{% url 'dashboard' %}">Wallet: {{ user.wallet_address }}</a></li>
+        {% endif %}
+        <li class="right"><a href="{% url 'logout' %}" class="btn btn-danger">Logout</a></li>
+        <li class="right"><a href="{% url 'detect_emotion' %}">vid</a></li>
+        <li class="right"><a href="{% url 'dashboard' %}?reset=true" class="btn btn-warning">Reset Graphs</a></li>
+        <li class="right"><a href="{% url 'upload' %}">File summarize</a></li>
+        <li><a id="wallet-address" href="#">Wallet: Not connected</a></li>
+    </ul>
+    
+    <div class="maincontainer">
+        <div class="container">
+            <h2>Patient Records</h2>
+            <table>
+                <tr>
+                    <th>Doctor Name</th>
+                    <th>Patient Name</th>
+                    <th>Description</th>
+                    <th>Date</th>
+                    <th>File Hash</th>
+                    <th>Patient Score</th>
+                    <th>Image</th>
+                    <th>Time Uploaded</th>
+                    <th>View File</th>
+                </tr>
+                {% for record in records %}
+                <tr>
+                    <td>{{ record.doctor_name }}</td>
+                    <td>{{ record.patient_name }}</td>
+                    <td>{{ record.description }}</td>
+                    <td>{{ record.date }}</td>
+                    <td>{{ record.file_hash }}</td>
+                    <td>{{ record.patient_score }}</td>
+                    <td>
+                        {% if record.patient_image %}
+                            <img src="{{ record.patient_image.url }}" alt="Patient Image" style="width: 100px; height: 100px;">
+                        {% else %}
+                            No image available
+                        {% endif %}
+                    </td>
+                    <td>{{ record.time_uploaded }}</td>
+                    <td>
+                        <a href="{{ record.file.url }}" target="_blank">View File</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+
+        <!-- Plotly Graph (3D Graph) -->
+        <div id="plotly-graph"></div>
+        <script>
+            // Example 3D scatter plot data
+            var trace1 = {
+                x: [1, 2, 3, 4, 5],
+                y: [10, 11, 12, 13, 14],
+                z: [15, 16, 17, 18, 19],
+                mode: 'markers',
+                marker: { size: 12 },
+                type: 'scatter3d'
+            };
+
+            var data3d = [trace1];
+
+            var layout3d = {
+                title: '3D Scatter Plot Example',
+                scene: {
+                    xaxis: { title: 'X Axis' },
+                    yaxis: { title: 'Y Axis' },
+                    zaxis: { title: 'Z Axis' }
+                }
+            };
+
+            Plotly.newPlot('plotly-graph', data3d, layout3d);
+        </script>
+
+        <!-- Plotly Pie Chart -->
+        <div id="pie-chart"></div>
+        <script>
+            // Pie chart data
+            var trace2 = {
+                labels: ['Happy', 'Sad', 'Angry', 'Surprised'],
+                values: [30, 20, 40, 10], // Example values (replace with dynamic data)
+                type: 'pie'
+            };
+
+            var dataPie = [trace2];
+
+            var layoutPie = {
+                title: 'Emotions Distribution',
+                showlegend: true
+            };
+
+            Plotly.newPlot('pie-chart', dataPie, layoutPie);
+        </script>
+    </div>
+
+    <script src="{% static 'web3.js' %}"></script>
+</body>
+</html>
